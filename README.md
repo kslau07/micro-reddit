@@ -8,7 +8,7 @@ The project specs can be found at:
 
 ## Project description
 
-This is the 2nd Rails project in Odin. The purpose of this project is help us be acquainted with the different associations we can set on our models. We will also apply knowledge of validations we learned through the Rails Guides.
+This is the 2nd Rails project in Odin. The purpose of this project is help us be acquainted with the different associations we can set on our models. We will also apply knowledge of validations we learned through the Rails Guides. 
 
 ## My goals
 
