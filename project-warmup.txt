@@ -8,28 +8,28 @@ Project: micro-reddit
 	- No commenting on comments
 
 	User
-		username:string [unique, present]
+		username:string [unique, 3+ chars, present]
 		password:string [6-16 chars, present]
 		email:string [present]
 
-		has_many :posts
-		has_many :comments
+		has_many :posts 													# goes in model
+		has_many :comments												# goes in model
 
 	Post
 		title:string [present]
-		URL:string [present]
+		url:string [present]
 		user_id:integer [present]
 
-		belongs_to :user
-		has_many :comments
+		belongs_to :user													# model
+		has_many :comments												# model
 		
 	Comment
 		body:text [present]
 		user_id:integer [present]
 		post_id:integer [present]
 
-		belongs_to :user
-		belongs_to :post
+		belongs_to :user													# model
+		belongs_to :post													# model
 
 ###
 
