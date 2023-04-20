@@ -1,0 +1,205 @@
+Warm-up exercise
+https://www.theodinproject.com/lessons/ruby-on-rails-micro-reddit
+
+Project: micro-reddit
+	- Allow users to be on the site 
+	- Submit links called posts
+	- Comment on posts
+	- No commenting on comments
+
+	User
+		username:string [unique, present]
+		password:string [6-16 chars, present]
+		email:string [present]
+
+		has_many :posts
+		has_many :comments
+
+	Post
+		title:string [present]
+		URL:string [present]
+		user_id:integer [present]
+
+		belongs_to :user
+		has_many :comments
+		
+	Comment
+		body:text [present]
+		user_id:integer [present]
+		post_id:integer [present]
+
+		belongs_to :user
+		belongs_to :post
+
+###
+
+Example scenario: 
+
+Author
+username:string [unique, 4-12 chars, present]
+email:string [unique, present]
+password:string [6-16 chars, present]
+has_many posts
+
+Post
+title:string [unique, present]
+body:text [present]
+author_id:integer [present] # foreign key
+belongs_to author
+
+For each of the following scenarios, write down likely:
+1. Models
+2. Columns
+3. Validations
+4. Associations (has_many, has_one, belongs_to)
+
+Tip: Instead of writing city/state explicitly, how about separate City and State models?
+
+Scenario 1: Online learning platform
+	- Has different courses
+		- Each course contains a title and description
+		- Each course contains multiple lessons
+			- Each lesson contains a title and body 
+
+	Model name: 
+		Course
+	Columns & validations:
+		title:string [unique, present]
+		description:text [present]
+	Associations:
+		has_many :lessons
+		
+	Model name:
+		Lesson
+	Columns & validations:
+		title:string [present]
+		body:text [present]
+		course_id:integer [present] # foreign key
+	Associations:
+		belongs_to :course
+
+Scenario 2: Profile tab
+	- A model called User already exists (storing username, email)
+	- Now we want to collect demographic info: city, state, country, age, gender
+	- How many profiles per user? 1
+	- How do we associate this with the User model? has_one / belongs_to
+
+	Model: User
+		username:string [unique, present]
+		password:string [6-16 chars, present]
+		email:string	[unique, regex pattern, present]
+
+		has_one :profile
+
+	Model: Profile
+		city_id:integer [present]
+		state_id:integer [present]
+		country_id:integer [present]
+		age:integer [0-120, present]
+		gender:string [present]
+		user_id:integer [present]
+
+		belongs_to :user
+
+	Model: Country
+		name:string [unique, present]
+
+		has_many :states
+		has_many :cities, through :states
+
+	Model: State
+		name:string [present]
+		country_id:integer [present]
+
+		has_many :cities
+		belongs_to :country
+
+	Model: City
+		name:string [present]
+		state_id:integer [present]
+
+		belongs_to :state
+		# we do not use belongs_to :country for some reason
+
+Scenario 3: Virtual pinboard
+	- Users on platform create "pins"
+	- Each pin contains a URL to an image
+	- Users can common on a pin, but cannot comment on comments
+
+	User
+		username:string [unique, present]
+		password:string [6-16 chars, present]
+		email:string [unique, regex pattern, present]
+		
+		has_many :pins
+
+	Pin
+		URL:string [regex pattern, present]
+		user_id:integer [present]
+		
+		belongs_to :user
+
+	
+Scenario 4: Message board like Hacker News
+	- Users can post links
+	- Other users can comment on these links (submissions)
+	- Comments can also contain comments
+
+	User
+		username:string [unique, present]
+		password:string [format with regex, present]
+		email:string [format with regex, unique, present]
+
+	Submission
+		URL:string [format with regex, present]
+		user_id:integer [present]
+
+		belongs_to :user
+		has_many :comments
+
+	Comment
+		body:text [present]
+		submission_id:integer [present]
+		user_id:integer [present]
+
+		belongs_to :user
+		has_and_belongs_to_many :comments
+
+###
+
+## Notes from Rails Guides
+
+foreign_keys: There seems to be 3 different ways to add a foreign key:
+1. foreign_key: true
+2. t.bigint :supplier_id -AND- add_index :accounts, :supplier_id
+3. t.references :supplier
+
+(see below)
+
+There are different ways to add a foreign_key
+
+This is one way:
+	t.belongs_to :supplier, index: { unique: true }, foreign_key: true
+
+
+2.7 we can add foreign keys like this too:
+
+	class CreateSuppliers < ActiveRecord::Migration[7.0]
+		def change
+			create_table :suppliers do |t|
+				t.string :name
+				t.timestamps
+			end
+
+			create_table :accounts do |t|
+				t.bigint  :supplier_id
+				t.string  :account_number
+				t.timestamps
+			end
+
+			add_index :accounts, :supplier_id
+		end
+	end
+
+	Using t.bigint :supplier_id makes the foreign key naming obvious and explicit. In current versions of Rails, you can abstract away this implementation detail by using t.references :supplier instead.
+

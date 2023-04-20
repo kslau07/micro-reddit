@@ -1,8 +1,5 @@
 # README
 
-changes
-changes
-
 ## TOP Project: micro-reddit
 
 ## Project specs
